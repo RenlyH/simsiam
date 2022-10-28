@@ -20,7 +20,7 @@
 #        balance_patch_per_class=False)
 #    return train_dset, val_dset
 
-def build_opensrh(cf='../opensrh_data.yaml'):
+def build_opensrh(cf='opensrh_data.yaml'):
     import yaml
     from torchvision.transforms import Compose
     from opensrh.datasets.srh_dataset import SRHClassificationDataset, SRHContrastiveDataset

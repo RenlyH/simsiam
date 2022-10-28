@@ -1,0 +1,59 @@
+#data:
+#    db_root: /nfs/turbo/umms-tocho-ns/data/opensrh
+#    rand_aug_prob: 0.5
+#    train_augmentation:
+#    - which: random_horiz_flip
+#      params: {}
+#    - which: random_vert_flip
+#      params: {}
+#    valid_augmentation:
+#    balance_patch_per_class: true
+
+data:
+    db_root: /nfs/turbo/umms-tocho-ns/data/opensrh
+    rand_aug_prob: 0.3
+    balance_patch_per_class: true
+    train_augmentation:
+    - which: random_horiz_flip
+      params: {}
+    - which: random_vert_flip
+      params: {}
+    - which: gaussian_noise
+      params: {}
+    - which: color_jitter
+      params: {}
+    - which: random_autocontrast
+      params: {}
+    - which: random_solarize
+      params:
+        threshold: 0.2
+    - which: random_sharpness
+      params:
+        sharpness_factor: 2
+    - which: gaussian_blur
+      params:
+        kernel_size: 5
+        sigma: 1
+    - which: random_affine
+      params:
+        degrees: 10
+        translate: [0.1, 0.3]
+    - which: random_resized_crop
+      params:
+        size: 300
+    - which: random_erasing
+      params: {}
+    valid_augmentation:
+    - which: random_horiz_flip
+      params: {}
+    - which: random_vert_flip
+      params: {}
+    - which: gaussian_noise
+      params: {}
+    - which: color_jitter
+      params: {}
+    - which: random_autocontrast
+      params: {}
+    - which: random_solarize
+      params:
+        threshold: 0.2
