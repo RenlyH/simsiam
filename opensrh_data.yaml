@@ -10,7 +10,7 @@
 #    balance_patch_per_class: true
 
 data:
-    db_root: /nfs/turbo/umms-tocho-ns/data/opensrh
+    db_root: /nfs/turbo/umms-tocho/data/opensrh
     rand_aug_prob: 0.3
     balance_patch_per_class: true
     train_augmentation:

@@ -1,0 +1,51 @@
+data:
+    set: srh
+    data_dir: /nfs/turbo/umms-tocho/root_srh_db/
+    train_slides: ~/turbo/code/renly/torchsrh/torchsrh/train/data/srh7v1/srh7v1_train.csv
+    valid_slides: ~/turbo/code/renly/torchsrh/torchsrh/train/data/srh7v1/srh7v1_test.csv
+    primary_label_index: 0
+    segmentation_model: 03207B00
+    contrastive:
+        discrimination: patch
+        #num_samples: 2
+        num_transforms: 2
+    train_augmentation:
+        - which: random_horiz_flip
+          params: {}
+        - which: random_vert_flip
+          params: {}
+        - which: gaussian_noise
+          params: {}
+        - which: color_jitter
+          params: {}
+        - which: random_autocontrast
+          params: {}
+        - which: random_solarize
+          params:
+            threshold: 0.2
+        - which: random_sharpness
+          params:
+            sharpness_factor: 2
+        - which: gaussian_blur
+          params:
+            kernel_size: 5
+            sigma: 1
+        - which: random_erasing
+          params: {}
+        - which: random_affine
+          params:
+            degrees: 10
+            translate: [0.1, 0.3]
+        - which: random_resized_crop
+          params:
+            size: 300
+    valid_augmentation: same
+    augmentation_random_prob: 0.3
+    sampling:
+        balance_patch: false 
+        slide_patch_thres: null
+valid:
+    data:
+        sampling_size: 8192 # -1 is all valid data
+        balance_patch: false
+        slide_patch_thres: null

@@ -35,8 +35,8 @@ model_names = sorted(name for name in models.__dict__
     and callable(models.__dict__[name]))
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
-parser.add_argument('data', metavar='DIR',
-                    help='path to dataset')
+#parser.add_argument('data', metavar='DIR', default='',
+#                    help='path to dataset')
 parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet50',
                     choices=model_names,
                     help='model architecture: ' +
@@ -44,11 +44,11 @@ parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet50',
                         ' (default: resnet50)')
 parser.add_argument('-j', '--workers', default=32, type=int, metavar='N',
                     help='number of data loading workers (default: 32)')
-parser.add_argument('--epochs', default=100, type=int, metavar='N',
+parser.add_argument('--epochs', default=20, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
-parser.add_argument('-b', '--batch-size', default=512, type=int,
+parser.add_argument('-b', '--batch-size', default=50, type=int,
                     metavar='N',
                     help='mini-batch size (default: 512), this is the total '
                          'batch size of all GPUs on the current node when '
@@ -60,7 +60,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
 parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,
                     metavar='W', help='weight decay (default: 1e-4)',
                     dest='weight_decay')
-parser.add_argument('-p', '--print-freq', default=10, type=int,
+parser.add_argument('-p', '--print-freq', default=50, type=int,
                     metavar='N', help='print frequency (default: 10)')
 parser.add_argument('--resume', default='', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
@@ -241,9 +241,9 @@ def main_worker(gpu, ngpus_per_node, args):
     #train_dataset = datasets.ImageFolder(
     #    traindir,
     #    simsiam.loader.TwoCropsTransform(transforms.Compose(augmentation)))
-    from datasets import build_opensrh
-    train_dataset, _ = build_opensrh()
-
+    from datasets import build_opensrh, build_srh7
+#    train_dataset, _ = build_opensrh()
+    train_dataset, _ = build_srh7()
     if args.distributed:
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset)
     else:
@@ -284,19 +284,19 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
     model.train()
 
     end = time.time()
-    for i, (images, _) in enumerate(train_loader):
+    for i, batch in enumerate(train_loader):
         # measure data loading time
         data_time.update(time.time() - end)
 
         if args.gpu is not None:
-            images[0] = images[0].cuda(args.gpu, non_blocking=True)
-            images[1] = images[1].cuda(args.gpu, non_blocking=True)
+            image0 = batch['image'][0].cuda(args.gpu, non_blocking=True)
+            image1 = batch['image'][1].cuda(args.gpu, non_blocking=True)
 
         # compute output and loss
-        p1, p2, z1, z2 = model(x1=images[0], x2=images[1])
+        p1, p2, z1, z2 = model(x1=image0, x2=image1)
         loss = -(criterion(p1, z2).mean() + criterion(p2, z1).mean()) * 0.5
 
-        losses.update(loss.item(), images[0].size(0))
+        losses.update(loss.item(), image0.size(0))
 
         # compute gradient and do SGD step
         optimizer.zero_grad()
